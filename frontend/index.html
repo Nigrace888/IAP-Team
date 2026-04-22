@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title></title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+
+<body class="bg-black flex items-center justify-center h-screen">
+
+<div class="bg-white w-96 p-12 rounded-3xl shadow-lg">
+  <div id="loginHeader" class="text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h1>
+    <p class="text-gray-500 text-sm">Log in to your account</p>
+  </div>
+
+  <div id="loginForm">
+    <input id="loginName" placeholder="Name"
+      class="border-0 bg-gray-200 w-full p-4 mb-4 rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400" required oninput="validateLogin()" />
+
+    <input id="loginPassword" type="password"
+      placeholder="Password"
+      class="border-0 bg-gray-200 w-full p-4 mb-6 rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400" required oninput="validateLogin()" />
+
+    <button id="loginBtn" onclick="login()"
+      class="bg-blue-500 text-white text-lg font-bold w-full p-3 rounded-full mb-4 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-600 disabled:hover:bg-gray-400"
+      disabled>
+      Log In
+    </button>
+  </div>
+
+  <div id="signupPrompt" class="text-center">
+    <p class="text-gray-500 text-sm mb-1">Don't have an account?</p>
+    <button onclick="showSignup()" class="text-blue-500 font-bold text-sm hover:text-blue-600">
+      Sign Up Now
+    </button>
+</div>
+  <div id="signupHeader" class="hidden text-center mb-8">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">Create Account</h1>
+    <p class="text-gray-500 text-sm">Sign up to get started</p>
+  </div>
+
+  <div id="signupForm" class="hidden">
+    <input id="signupName" placeholder="Name"
+      class="border-0 bg-gray-200 w-full p-4 mb-4 rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400" required oninput="validateSignup()" />
+
+    <input id="signupEmail" placeholder="Email"
+      class="border-0 bg-gray-200 w-full p-4 mb-4 rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400" required oninput="validateSignup()" />
+
+    <input id="signupPassword" type="password"
+      placeholder="Password"
+      class="border-0 bg-gray-200 w-full p-4 mb-6 rounded-full text-gray-700 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400" required oninput="validateSignup()" />
+
+    <button id="signupBtn" onclick="signup()"
+      class="bg-blue-500 text-white text-lg font-bold w-full p-3 rounded-full mb-4 disabled:bg-gray-400 disabled:cursor-not-allowed hover:bg-blue-600 disabled:hover:bg-gray-400"
+      disabled>
+      Sign Up
+    </button>
+
+    <button onclick="showLogin()" class="text-blue-500 font-bold text-sm hover:text-blue-600 w-full text-center">
+      Back to Log In
+    </button>
+  </div>
+
+  <p id="msg" class="text-center mt-3 text-sm text-red-500"></p>
+
+</div>
+
+<script>
+const API = "http://localhost:3000";
+
+// toggle forms
+function showLogin() {
+  document.getElementById("loginHeader").classList.remove("hidden");
+  document.getElementById("signupHeader").classList.add("hidden");
+  document.getElementById("loginForm").classList.remove("hidden");
+  document.getElementById("signupForm").classList.add("hidden");
+  document.getElementById("signupPrompt").classList.remove("hidden");
+  document.getElementById("msg").innerText = "";
+}
+
+function showSignup() {
+  document.getElementById("signupHeader").classList.remove("hidden");
+  document.getElementById("loginHeader").classList.add("hidden");
+  document.getElementById("signupForm").classList.remove("hidden");
+  document.getElementById("loginForm").classList.add("hidden");
+  document.getElementById("signupPrompt").classList.add("hidden");
+  document.getElementById("msg").innerText = "";
+}
+
+// Validation
+function validateLogin() {
+  const name = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  const btn = document.getElementById("loginBtn");
+  
+  if (name && password) {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+function validateSignup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  const btn = document.getElementById("signupBtn");
+  
+  if (name && email && password) {
+    btn.disabled = false;
+  } else {
+    btn.disabled = true;
+  }
+}
+
+// LOGIN
+function login() {
+  const name = document.getElementById("loginName").value.trim();
+  const password = document.getElementById("loginPassword").value.trim();
+  
+  if (!name || !password) {
+    alert("Please fill out all fields");
+    return;
+  }
+  
+  axios.post(`${API}/login`, {
+    name: name,
+    password: password
+  })
+  .then(res => {
+    alert(res.data.message);
+    console.log(res.data.message);
+    
+    // redirect to dashboard
+    // setTimeout(() => {
+    //   window.location.href = "dashboard.html";
+    // }, 1000);
+  })
+  .catch(err => {
+    alert(err.response?.data?.message || "Login failed");
+    console.error(err);
+  });
+}
+
+// SIGNUP
+function signup() {
+  const name = document.getElementById("signupName").value.trim();
+  const email = document.getElementById("signupEmail").value.trim();
+  const password = document.getElementById("signupPassword").value.trim();
+  
+  if (!name || !email || !password) {
+    document.getElementById("msg").innerText = "Please fill out all fields";
+    return;
+  }
+  
+  axios.post(`${API}/signup`, {
+    name: name,
+    email: email,
+    password: password
+  })
+  .then(res => {
+    document.getElementById("msg").innerText = res.data.message;
+    console.log(res.data.message);
+    
+    // Clear fields and show success message
+    document.getElementById("signupName").value = "";
+    document.getElementById("signupEmail").value = "";
+    document.getElementById("signupPassword").value = "";
+    
+    // Optionally redirect to login after a delay
+    setTimeout(() => {
+      showLogin();
+    }, 2000);
+  })
+  .catch(err => {
+    document.getElementById("msg").innerText = err.response?.data?.message || "Signup failed";
+    console.error(err);
+  });
+}
+</script>
+
+</body>
+</html>
