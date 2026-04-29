@@ -1,5 +1,11 @@
-const InputField = (
-  ({ label, type, value, onChange, placeholder,ref }) => {
+export default function InputField({
+  ref,
+  label,
+  type,
+  value,
+  onChange,
+  placeholder,
+}) {
   return (
     <div className="space-y-2">
       <p className="font-bold capitalize">{label}</p>
@@ -12,8 +18,5 @@ const InputField = (
         placeholder={placeholder}
       />
     </div>
-    );
-  }
-);
-
-export default InputField;
+  );
+}
