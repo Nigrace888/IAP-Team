@@ -3,6 +3,7 @@ import Dashboard from "./Dashboard";
 //import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
 import ProtectedRoute from "./ProtectedRoute";
+import Signup from "./Signup";
 
 function App() {
   //const [page, setPage] = useState("login");
@@ -11,8 +12,8 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route
-          path="/dashboard"
+        <Route path="/Signup" element={<Signup />} />
+        <Route path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />

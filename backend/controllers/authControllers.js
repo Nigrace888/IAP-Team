@@ -24,26 +24,25 @@ export const Login = async (req, res) => {
 
 // Signup
 export const Signup = async (req, res) => {
-  const { name, email, password } = req.body;
+  try {
+    const { name, email, password } = req.body;
 
-  const exists = await User.findOne({ email });
+    const exists = await User.findOne({ email });
 
-  if (exists) {
-    return res.status(400).json({ message: "User already exists" });
+    if (exists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+    const newUser = await User.create({ name, email, password });
+
+    res.json({
+      message: "Signup successful",
+      user: newUser,
+    });
+
+  } catch (err) {
+    res.status(500).json({ error: err.message });
   }
-
-  const newUser = await User.create({
-    name,
-    email,
-    password,
-  });
-
-  // fs.writeFileSync("./users.json", JSON.stringify(users, null, 2));
-
-  res.json({
-    message: "Signup successful",
-    user: newUser,
-  });
 };
 
 // Create(POST) user

@@ -13,24 +13,37 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleLogin = async () => {
-  const res = await fetch("http://localhost:3000/login", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ email, password }),
-  });
+const handleLogin = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
 
-  const data = await res.json();
+    console.log("Response status:", res.status);
 
-  if (res.ok) {
-    login(data.user);
-    navigate("/dashboard");
-  } else {
-    setError(data.message);
+    const data = await res.json();
+    console.log("Response data:", data);
+
+    if (res.ok) {
+      if (data.user) {
+        login(data.user);
+      } else {
+        console.warn("No user object in response");
+      }
+      navigate("/dashboard");
+    } else {
+      setError(data.message || "Login failed");
+    }
+  } catch (err) {
+    console.error("Login error:", err);
+    setError("Network error, could not connect to server");
   }
 };
+
+
+
 
   const emailRef = useRef(null);
 
