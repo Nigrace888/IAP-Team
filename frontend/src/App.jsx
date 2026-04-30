@@ -2,6 +2,7 @@ import Login from "./Login";
 import Dashboard from "./Dashboard";
 //import { useState } from "react";
 import { Routes, Route } from "react-router-dom";
+import ProtectedRoute from "./ProtectedRoute";
 
 function App() {
   //const [page, setPage] = useState("login");
@@ -10,7 +11,14 @@ function App() {
     <>
       <Routes>
         <Route path="/" element={<Login />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
       {/*
       {page === "login" && <Login />}

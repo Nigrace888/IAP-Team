@@ -1,12 +1,13 @@
 // import fs from "fs";
-import User from "../../models/User.js";
+
+import User from "../models/User.js";
 
 // Login
 export const Login = async (req, res) => {
-  const { name, password } = req.body;
+  const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ name, password });
+    const user = await User.findOne({ email, password });
     if (!user) {
       return res
         .status(404)

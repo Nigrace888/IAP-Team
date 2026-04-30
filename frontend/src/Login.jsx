@@ -1,31 +1,36 @@
 import { useEffect, useRef, useState } from "react";
 import InputField from "./components/InputField";
 import { useNavigate } from "react-router-dom";
+import { useContext } from "react";
+import { AuthContext } from "./AuthContext";
 
 
 function Login() {
-  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const handleLogin = () => {
-    if (!email || !password) {
-      setError("All fields are required");
-      return;
-    }
+  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
 
-    if (!email.includes("@")) {
-      setError("Invalid email format");
-      return;
-    }
+  const handleLogin = async () => {
+  const res = await fetch("http://localhost:3000/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
 
-    setError("");
+  const data = await res.json();
 
-    console.log("Login Data:", { email, password });
-    alert("Login successful!");
-    navigate("/dashboard"); 
-  };
+  if (res.ok) {
+    login(data.user);
+    navigate("/dashboard");
+  } else {
+    setError(data.message);
+  }
+};
 
   const emailRef = useRef(null);
 
