@@ -10,6 +10,7 @@ const PORT = 3000;
 app.use(express.json());
 app.use(cors());
 
+
 // mongodb connection
 
 mongoose.connect("mongodb://localhost:27017/IAP")
@@ -18,7 +19,7 @@ mongoose.connect("mongodb://localhost:27017/IAP")
 
 
 // routes
-app.use("/", authRoute);
+app.use("/api", authRoute);
 app.use("/users", userRoutes);
 
 // serve frontend

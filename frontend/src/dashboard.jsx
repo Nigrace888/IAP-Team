@@ -1,6 +1,7 @@
 import { useContext } from "react";
 import { AuthContext } from "./AuthContext";
 import { useNavigate } from "react-router-dom";
+import {UserList} from "./components/UserList.jsx";
 
 function Dashboard() {
   const { user, logout } = useContext(AuthContext);
@@ -20,6 +21,7 @@ function Dashboard() {
       >
         Sign Out
       </button>
+       <UserList />
     </div>
   );
 }
