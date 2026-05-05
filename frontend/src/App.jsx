@@ -9,25 +9,18 @@ function App() {
   //const [page, setPage] = useState("login");
 
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<Login />} />
-        <Route path="/Signup" element={<Signup />} />
-        <Route path="/dashboard"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-      </Routes>
-      {/*
-      {page === "login" && <Login />}
-      {page === "dashboard" && <Dashboard />}
-      <button onClick={()=> setPage(page ==="login"? "dashboard":"login")}>
-        change Page
-      </button>*/}
-    </>
+    <Routes>
+      <Route path="/" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
   );
 }
 

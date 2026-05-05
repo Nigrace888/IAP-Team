@@ -1,5 +1,6 @@
 import express from "express";
 import authRoute from "./routes/authRoute.js";
+import todoRoutes from "./routes/todoRoutes.js"; // ADD THIS
 import cors from "cors";
 import mongoose from "mongoose";
 import userRoutes from "./routes/userRoutes.js";
@@ -14,12 +15,13 @@ app.use(cors());
 // mongodb connection
 
 mongoose.connect("mongodb://localhost:27017/IAP")
-.then(()=> console.log("DB connected"))
-.catch(err => console.log(err));
+  .then(() => console.log("DB connected"))
+  .catch(err => console.log(err));
 
 
 // routes
 app.use("/api", authRoute);
+app.use("/api/todos", todoRoutes); // ADD THIS
 app.use("/users", userRoutes);
 
 // serve frontend

@@ -1,28 +1,49 @@
-// import fs from "fs";
-
 import User from "../models/User.js";
+import jwt from "jsonwebtoken";
 
-// Login
+// Generate JWT Token
+const generateToken = (id) => {
+  return jwt.sign({ id }, "your_jwt_secret_key", {
+    expiresIn: "30d"
+  });
+};
+
+// Login - FIXED with token
 export const Login = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await User.findOne({ email, password });
+    const user = await User.findOne({ email });
+    
     if (!user) {
-      return res
-        .status(404)
-        .json({ message: "user not found or invalid credentials" });
+      return res.status(404).json({ message: "User not found" });
     }
+    
+    // Check password separately
+    if (user.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+    
+    // ✅ Generate token
+    const token = generateToken(user._id);
+    
+    // ✅ Return user data AND token
     return res.json({
       message: "Login successful",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      },
+      token: token  // 👈 THIS WAS MISSING!
     });
+    
   } catch (err) {
-    return res.status(500).json({ err: err.message });
+    return res.status(500).json({ error: err.message });
   }
 };
 
-// Signup
+// Signup - FIXED with token
 export const Signup = async (req, res) => {
   try {
     const { name, email, password } = req.body;
@@ -35,9 +56,18 @@ export const Signup = async (req, res) => {
 
     const newUser = await User.create({ name, email, password });
 
-    res.json({
+    // ✅ Generate token
+    const token = generateToken(newUser._id);
+
+    // ✅ Return user data AND token
+    res.status(201).json({
       message: "Signup successful",
-      user: newUser,
+      user: {
+        id: newUser._id,
+        name: newUser.name,
+        email: newUser.email
+      },
+      token: token  // 👈 THIS WAS MISSING!
     });
 
   } catch (err) {
@@ -50,9 +80,13 @@ export const createUser = async (req, res) => {
   try {
     const user = await User.create(req.body);
 
-    return res.json({
+    return res.status(201).json({
       message: "User created",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -62,8 +96,7 @@ export const createUser = async (req, res) => {
 // Read(GET) all users
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find();
-
+    const users = await User.find().select("-password"); // Exclude passwords
     return res.json(users);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -73,7 +106,7 @@ export const getUsers = async (req, res) => {
 // Read(GET) single user
 export const getUserById = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await User.findById(req.params.id).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -85,7 +118,6 @@ export const getUserById = async (req, res) => {
   }
 };
 
-
 // Update(PUT) user
 export const updateUser = async (req, res) => {
   try {
@@ -93,7 +125,7 @@ export const updateUser = async (req, res) => {
       req.params.id,
       req.body,
       { new: true }
-    );
+    ).select("-password");
 
     if (!user) {
       return res.status(404).json({ message: "User not found" });
@@ -101,14 +133,16 @@ export const updateUser = async (req, res) => {
 
     return res.json({
       message: "User updated",
-      user,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email
+      }
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 };
-
-
 
 // Del(DELETE) user
 export const deleteUser = async (req, res) => {
@@ -120,10 +154,9 @@ export const deleteUser = async (req, res) => {
     }
 
     return res.json({
-      message: "User deleted",
+      message: "User deleted"
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 };
-

@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import InputField from "./components/InputField";
 import { useNavigate } from "react-router-dom";
 import { useContext } from "react";
-import { AuthContext } from "./AuthContext";
+import { AuthContext } from "./AuthContext.jsx";
 
 
 function Login() {
@@ -12,7 +12,6 @@ function Login() {
 
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
-
 const handleLogin = async () => {
   try {
     const res = await fetch("http://localhost:3000/api/login", {
@@ -21,16 +20,24 @@ const handleLogin = async () => {
       body: JSON.stringify({ email, password }),
     });
 
-    console.log("Response status:", res.status);
+    console.log("1. Response status:", res.status);
 
     const data = await res.json();
-    console.log("Response data:", data);
+    console.log("2. Full response data:", data);
+    console.log("3. data.user:", data.user);
+    console.log("4. data.token:", data.token);
 
     if (res.ok) {
-      if (data.user) {
-        login(data.user);
+      if (data.user && data.token) {
+        console.log("5. About to call login() with:", data.user, data.token);
+        login(data.user, data.token);
+        console.log("6. Login function called successfully");
+        console.log("7. About to navigate to /dashboard");
+        navigate("/dashboard");
+        console.log("8. Navigation called");
       } else {
-        console.warn("No user object in response");
+        console.log("ERROR: Missing user or token in response");
+        setError("Invalid response from server");
       }
       navigate("/dashboard");
     } else {
@@ -38,7 +45,7 @@ const handleLogin = async () => {
     }
   } catch (err) {
     console.error("Login error:", err);
-    setError("Network error, could not connect to server");
+    setError("Network error");
   }
 };
 
@@ -47,9 +54,9 @@ const handleLogin = async () => {
 
   const emailRef = useRef(null);
 
-  useEffect(() => {
-    emailRef.current.focus();
-  }, [emailRef]);
+ useEffect(() => {
+  emailRef.current.focus();
+}, []);  // ✅ Empty dependency array
 
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen bg-zinc-500">

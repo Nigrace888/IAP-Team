@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect, useContext } from "react";
 import InputField from "./components/InputField";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "./AuthContext";
 
 function Signup() {
   const [name, setName] = useState("");
@@ -9,7 +8,6 @@ function Signup() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const nameRef = useRef(null);
@@ -18,32 +16,30 @@ function Signup() {
     nameRef.current.focus();
   }, []);
 
-  const handleSignup = async () => {
-    try {
-      const res = await fetch("http://localhost:3000/api/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
-      });
+const handleSignup = async () => {
+  try {
+    const res = await fetch("http://localhost:3000/api/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email, password }),
+    });
 
-      console.log("Response status:", res.status);
+    const data = await res.json();
 
-      const data = await res.json();
-      console.log("Response data:", data);
-
-      if (res.ok) {
-        if (data.user) {
-          login(data.user); // auto-login after signup
-        }
-        navigate("/dashboard");
-      } else {
-        setError(data.message || "Signup failed");
+    if (res.ok) {
+      if (data.user && data.token) {
+    localStorage.setItem("token", data.token);
+localStorage.setItem("user", JSON.stringify(data.user)); // Pass token
       }
-    } catch (err) {
-      console.error("Signup error:", err);
-      setError("Network error, could not connect to server");
+      navigate("/dashboard");
+    } else {
+      setError(data.message || "Signup failed");
     }
-  };
+  } catch (err) {
+    console.error("Signup error:", err);
+    setError("Network error, could not connect to server");
+  }
+};
 
   return (
     <div className="flex flex-col justify-center items-center w-screen h-screen bg-zinc-500">

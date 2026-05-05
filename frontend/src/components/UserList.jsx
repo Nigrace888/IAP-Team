@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-export const UserList =() =>{
+const UserList = () => {
   const [users, setUsers] = useState([]);
   const [error, setError] = useState("");
 
@@ -26,19 +26,19 @@ export const UserList =() =>{
   }, []);
 
   return (
-    <div className="p-4 bg-white rounded shadow">
-      <h2 className="text-xl font-bold mb-2">Users List</h2>
+    <div className="p-2 text-md w-90 h-15 bg-white rounded shadow">
+      <h2 className="text-md font-bold mb-1">Users List</h2>
 
       {error && <p className="text-red-500">{error}</p>}
 
       {users.length === 0 ? (
         <p>No users found</p>
       ) : (
-        <ul className="space-y-2">
+        <ul className="space-y-1">
           {users.map((user) => (
             <li
               key={user._id}
-              className="border p-2 rounded"
+              className="border p-1 rounded"
             >
               <p><b>Name:</b> {user.name}</p>
               <p><b>Email:</b> {user.email}</p>
@@ -48,5 +48,6 @@ export const UserList =() =>{
       )}
     </div>
   );
-}
+};
 
+export default UserList;
