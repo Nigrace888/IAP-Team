@@ -14,7 +14,7 @@ app.use(cors());
 
 // mongodb connection
 
-mongoose.connect("mongodb://localhost:27017/IAP")
+mongoose.connect("mongodb+srv://grace888:1234@cluster0.8m4jumn.mongodb.net/Cluster0")
   .then(() => console.log("DB connected"))
   .catch(err => console.log(err));
 
